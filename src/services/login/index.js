@@ -3,15 +3,14 @@ const userSchema = require("../users/schema");
 const jwt = require("jsonwebtoken");
 const loginRouter = express.Router();
 
-loginRouter.get("/", async (req, res, next) => {
+loginRouter.post("/", async (req, res, next) => {
   try {
-    const { username, password } = req.query;
+    const { username, password } = req.body;
 
     const isMatch = password === "aaaa";
 
     if (isMatch) {
       const token = await generateJWT({ username });
-      console.log(token);
       res.cookie("accessToken", token, {
         path: "/",
         httpOnly: true,
@@ -25,7 +24,9 @@ loginRouter.get("/", async (req, res, next) => {
         path: ["/users/refreshToken", "/logout"],
         httpOnly: true,
       }); */
-      res.send("Ok");
+      res.send({ msg: "Ok" });
+    } else {
+      res.status(400).send("Invalid username/password");
     }
   } catch (error) {
     next(error);

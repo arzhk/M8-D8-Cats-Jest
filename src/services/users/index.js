@@ -13,7 +13,7 @@ const usersRouter = express.Router();
 }); */
 
 const authorise = async (req, res, next) => {
-  const token = req.body.accessToken;
+  const token = req.cookies.accessToken;
   const { username } = await verifyJWT(token);
   req.username = username;
   next();
@@ -27,9 +27,9 @@ const verifyJWT = (token) =>
     })
   );
 
-usersRouter.post("/", authorise, async (req, res, next) => {
+usersRouter.get("/me", authorise, async (req, res, next) => {
   try {
-    res.send(req.username);
+    res.send({ username: req.username });
   } catch (err) {
     next(err);
   }
@@ -40,12 +40,5 @@ module.exports = usersRouter;
 /*
 WHEN ACCESSTOKEN EXPIRES,
     GET NEW ACCESSTOKEN BY CALLING REFRESH TOKEN ENDPOINT,
-
-
-
-
-
     ACCESSTOKEN EXPIRES QUICKLY, REFRESHTOKEN SLOWER
-
-
 */
